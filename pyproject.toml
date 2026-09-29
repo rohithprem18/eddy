@@ -1,0 +1,18 @@
+[project]
+name = "eddy"
+version = "1.0.0"
+description = "Event-time features with sub-millisecond serving: Kafka, Schema Registry, Spark Structured Streaming, Redis"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

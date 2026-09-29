@@ -1,0 +1,13 @@
+.git
+.venv
+venv
+**/__pycache__
+.pytest_cache
+.ruff_cache
+checkpoints
+spark-warehouse
+.env
+tests
+**/node_modules
+web/dist
+eddy/static
