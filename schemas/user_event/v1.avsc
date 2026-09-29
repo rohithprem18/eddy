@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "UserEvent",
+  "namespace": "io.eddy.events",
+  "doc": "A user interaction on the storefront. v1: initial contract.",
+  "fields": [
+    {"name": "event_id", "type": "string", "doc": "UUID, unique per event"},
+    {"name": "user_id", "type": "string"},
+    {"name": "event_type", "type": "string", "doc": "one of: view, add_to_cart, purchase, refund"},
+    {"name": "product_id", "type": "string"},
+    {"name": "category", "type": "string"},
+    {"name": "amount", "type": "double", "doc": "unit price in `currency`"},
+    {"name": "currency", "type": "string", "default": "USD"},
+    {"name": "event_ts", "type": {"type": "long", "logicalType": "timestamp-millis"}}
+  ]
+}
