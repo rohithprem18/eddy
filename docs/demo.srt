@@ -1,0 +1,136 @@
+1
+00:00:08,826 --> 00:00:09,526
+Meet Eddy.
+
+2
+00:00:09,457 --> 00:00:12,616
+Event-time features, with sub-millisecond serving.
+
+3
+00:00:12,636 --> 00:00:14,163
+Raw user events go in.
+
+4
+00:00:14,183 --> 00:00:16,521
+Fresh, per-user machine-learning features come
+
+5
+00:00:16,541 --> 00:00:18,988
+out, ready the moment a model asks.
+
+6
+00:00:20,029 --> 00:00:21,200
+This is the live console.
+
+7
+00:00:21,220 --> 00:00:24,128
+Sixty thousand events a minute stream through
+
+8
+00:00:24,148 --> 00:00:26,866
+Kafka, thousands of users have features that
+
+9
+00:00:26,886 --> 00:00:29,628
+are seconds old, and every stage of the pipeline
+
+10
+00:00:29,648 --> 00:00:30,965
+reports its own health.
+
+11
+00:00:32,007 --> 00:00:34,487
+Spark Structured Streaming runs three queries
+
+12
+00:00:34,507 --> 00:00:36,559
+at once: a five-minute window,
+
+13
+00:00:36,579 --> 00:00:39,178
+a one-hour window, and a live profile.
+
+14
+00:00:39,198 --> 00:00:42,118
+Each one shows exactly how much of its capacity
+
+15
+00:00:42,138 --> 00:00:42,979
+it is using.
+
+16
+00:00:43,996 --> 00:00:45,857
+Now, the part a model cares about.
+
+17
+00:00:45,877 --> 00:00:48,822
+Pick a user, and Eddy returns their spend,
+
+18
+00:00:48,842 --> 00:00:51,333
+conversion and browsing behaviour for the last
+
+19
+00:00:51,353 --> 00:00:53,095
+five minutes and the last hour,
+
+20
+00:00:53,115 --> 00:00:54,503
+straight from Redis.
+
+21
+00:00:55,531 --> 00:00:57,535
+And bad data never breaks the stream.
+
+22
+00:00:57,555 --> 00:01:00,571
+Every event is checked against a versioned Avro
+
+23
+00:01:00,591 --> 00:01:01,291
+schema.
+
+24
+00:01:01,115 --> 00:01:03,856
+Anything that breaks the contract lands in a
+
+25
+00:01:03,876 --> 00:01:06,312
+dead-letter queue, with the reason attached.
+
+26
+00:01:07,339 --> 00:01:08,772
+Under the hood: a producer,
+
+27
+00:01:08,792 --> 00:01:12,391
+Kafka, Spark, Redis and FastAPI.
+
+28
+00:01:12,411 --> 00:01:15,736
+Built for correctness, with event-time watermarks,
+
+29
+00:01:15,756 --> 00:01:17,426
+exactly-once checkpoints,
+
+30
+00:01:17,446 --> 00:01:20,513
+and writes that never roll a feature backwards.
+
+31
+00:01:21,523 --> 00:01:22,223
+Eddy.
+
+32
+00:01:21,773 --> 00:01:24,753
+Event-time features with sub-millisecond serving,
+
+33
+00:01:24,773 --> 00:01:26,122
+in one Docker command.
+
+34
+00:01:26,142 --> 00:01:27,959
+Open source, on GitHub.
+
