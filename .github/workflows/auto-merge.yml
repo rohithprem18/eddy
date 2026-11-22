@@ -1,0 +1,21 @@
+# Merges a pull request automatically once every check in CI has passed.
+# Pull requests that change workflows, dependencies, deployment config or other protected
+# paths get the `needs-maintainer-review` label and wait for a manual merge.
+# Shared logic: https://github.com/rohithprem18/.github/blob/main/.github/workflows/auto-merge.yml
+name: Auto-merge
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: read
+  actions: write
+
+jobs:
+  auto-merge:
+    uses: rohithprem18/.github/.github/workflows/auto-merge.yml@main
