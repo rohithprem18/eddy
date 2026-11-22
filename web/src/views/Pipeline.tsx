@@ -1,3 +1,4 @@
+import { QueryCardBodySkeleton } from "../components/Skeleton";
 import { QUERY_NAMES, batchAge } from "../hooks";
 import type { QueryName, Stats } from "../types";
 import { fmt1, fmtAgo, fmtInt, fmtMs } from "../format";
@@ -63,43 +64,49 @@ export function Pipeline({ stats }: { stats: Stats | null }) {
               </div>
               <p className="caption">{about.purpose}</p>
 
-              <div className="query-metric">
-                <div className="kpi-value">{q ? fmtInt(q.processed_rows_per_second) : "—"}</div>
-                <div className="mono-label">rows / second capacity</div>
-              </div>
+              {q ? (
+                <>
+                  <div className="query-metric">
+                    <div className="kpi-value">{fmtInt(q.processed_rows_per_second)}</div>
+                    <div className="mono-label">rows / second capacity</div>
+                  </div>
 
-              <div className="meter" aria-label="Capacity used">
-                <div className="meter-track">
-                  <div className={`meter-fill${busy ? " warn" : ""}`} style={{ width: `${Math.min(100, (util ?? 0) * 100)}%` }} />
-                </div>
-                <div className="meter-label">
-                  {util === null ? "Waiting for the first batch" : `Using ${Math.round(util * 100)}% of capacity`}
-                </div>
-              </div>
+                  <div className="meter" aria-label="Capacity used">
+                    <div className="meter-track">
+                      <div className={`meter-fill${busy ? " warn" : ""}`} style={{ width: `${Math.min(100, (util ?? 0) * 100)}%` }} />
+                    </div>
+                    <div className="meter-label">
+                      {util === null ? "Waiting for the first batch" : `Using ${Math.round(util * 100)}% of capacity`}
+                    </div>
+                  </div>
 
-              <div className="outputs">
-                <div className="mono-label">
-                  Produces {about.outputs.length} features{about.suffix && ` · suffix ${about.suffix}`}
-                </div>
-                <ul className="output-tags">
-                  {about.outputs.map((o) => (
-                    <li key={o}>{o}</li>
-                  ))}
-                </ul>
-              </div>
+                  <div className="outputs">
+                    <div className="mono-label">
+                      Produces {about.outputs.length} features{about.suffix && ` · suffix ${about.suffix}`}
+                    </div>
+                    <ul className="output-tags">
+                      {about.outputs.map((o) => (
+                        <li key={o}>{o}</li>
+                      ))}
+                    </ul>
+                  </div>
 
-              <dl className="rows">
-                <dt>Incoming</dt>
-                <dd>{q ? `${fmt1(q.input_rows_per_second)} rows/s` : "—"}</dd>
-                <dt>Last batch</dt>
-                <dd>{q ? `${fmtInt(q.num_input_rows)} rows in ${fmtMs(q.trigger_execution_ms)}` : "—"}</dd>
-                <dt>State kept in memory</dt>
-                <dd>{q ? (q.state_rows ? `${fmtInt(q.state_rows)} windows` : "none (stateless)") : "—"}</dd>
-                <dt>Batches completed</dt>
-                <dd>{q ? fmtInt(q.batch_id + 1) : "—"}</dd>
-                <dt>Updated</dt>
-                <dd>{fmtAgo(age)}</dd>
-              </dl>
+                  <dl className="rows">
+                    <dt>Incoming</dt>
+                    <dd>{`${fmt1(q.input_rows_per_second)} rows/s`}</dd>
+                    <dt>Last batch</dt>
+                    <dd>{`${fmtInt(q.num_input_rows)} rows in ${fmtMs(q.trigger_execution_ms)}`}</dd>
+                    <dt>State kept in memory</dt>
+                    <dd>{q.state_rows ? `${fmtInt(q.state_rows)} windows` : "none (stateless)"}</dd>
+                    <dt>Batches completed</dt>
+                    <dd>{fmtInt(q.batch_id + 1)}</dd>
+                    <dt>Updated</dt>
+                    <dd>{fmtAgo(age)}</dd>
+                  </dl>
+                </>
+              ) : (
+                <QueryCardBodySkeleton />
+              )}
             </section>
           );
         })}

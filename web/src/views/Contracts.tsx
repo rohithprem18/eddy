@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import { DlqCardSkeleton, SchemaCardSkeleton, Skeleton } from "../components/Skeleton";
 import { useInterval } from "../hooks";
 import type { Contracts as ContractsData, DeadLetters } from "../types";
 import { fmtAgo, fmtInt } from "../format";
@@ -43,7 +44,9 @@ export function Contracts({ now }: { now: number }) {
               <div className="mono-label" id="schema-title">
                 Schema registry
               </div>
-              <p className="caption">{contracts?.available ? contracts.subject : "Loading…"}</p>
+              <p className="caption">
+                {contracts?.available ? contracts.subject : <Skeleton width={200} height={12} />}
+              </p>
             </div>
             {contracts?.available && <span className="badge ok">{contracts.compatibility} compatible</span>}
           </div>
@@ -51,6 +54,8 @@ export function Contracts({ now }: { now: number }) {
           {contracts && !contracts.available && (
             <p className="caption">The schema registry is not reachable right now.</p>
           )}
+
+          {contracts == null && <SchemaCardSkeleton />}
 
           {versions.length > 0 && current && (
             <>
@@ -105,7 +110,7 @@ export function Contracts({ now }: { now: number }) {
                 Dead-letter queue
               </div>
               <p className="caption">
-                {dlq?.available ? `${dlq.topic} · rejections here are expected` : "Loading…"}
+                {dlq?.available ? `${dlq.topic} · rejections here are expected` : <Skeleton width={230} height={12} />}
               </p>
             </div>
             {dlq?.available && (
@@ -116,6 +121,7 @@ export function Contracts({ now }: { now: number }) {
             )}
           </div>
 
+          {dlq == null && <DlqCardSkeleton />}
           {dlq && !dlq.available && <p className="caption">Kafka is not reachable right now.</p>}
           {dlq?.available && dlq.recent.length === 0 && (
             <p className="caption">No rejected events. Every event so far has matched the contract.</p>

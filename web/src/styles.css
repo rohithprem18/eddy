@@ -784,6 +784,46 @@ td:last-child {
   text-overflow: ellipsis;
 }
 
+/* ---------- loading skeletons ---------- */
+.skeleton {
+  background: linear-gradient(90deg, var(--canvas-soft), #24262b, var(--canvas-soft));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.skeleton.round {
+  border-radius: 50%;
+}
+.skeleton.pill-shape {
+  border-radius: 999px;
+}
+.skeleton-kpi-value {
+  margin: 10px 0 12px;
+}
+.skeleton-stack {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.skeleton-lines {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.skeleton-region {
+  display: block;
+}
+.chip-skeletons {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
 /* ---------- responsive: collapse progressively, never overflow ---------- */
 @media (max-width: 1180px) {
   .health .health-metric {
@@ -852,5 +892,8 @@ td:last-child {
   }
   .meter-fill {
     transition: none;
+  }
+  .skeleton {
+    animation: none;
   }
 }

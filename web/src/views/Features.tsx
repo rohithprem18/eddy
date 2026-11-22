@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
+import { ChipRowSkeleton, FeatureResultSkeleton } from "../components/Skeleton";
 import { useRecent } from "../hooks";
 import type { FeatureVector } from "../types";
 import { fmt2, fmtInt, fmtMs } from "../format";
@@ -44,12 +45,22 @@ export function Features() {
   const [query, setQuery] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
   const [active, setActive] = useState<string[]>([]);
+  const [activeLoaded, setActiveLoaded] = useState(false);
   const [recent, pushRecent] = useRecent("eddy.recentLookups");
   const [copied, setCopied] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    api.sampleUsers(8).then((r) => setActive(r.user_ids)).catch(() => setActive([]));
+    api
+      .sampleUsers(8)
+      .then((r) => {
+        setActive(r.user_ids);
+        setActiveLoaded(true);
+      })
+      .catch(() => {
+        setActive([]);
+        setActiveLoaded(true);
+      });
     // "/" focuses search from anywhere on this view, as in most dashboards.
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "/" && document.activeElement !== input.current) {
@@ -125,18 +136,22 @@ export function Features() {
             ))}
           </div>
         )}
-        <div className="chip-row">
-          <span className="mono-label">Active now</span>
-          {active.length ? (
-            active.map((u) => (
-              <button key={u} type="button" className="pill sm" onClick={() => lookup(u)}>
-                {u}
-              </button>
-            ))
-          ) : (
-            <span className="caption">No users yet. Features appear about a minute after the stream starts.</span>
-          )}
-        </div>
+        {!activeLoaded ? (
+          <ChipRowSkeleton />
+        ) : (
+          <div className="chip-row">
+            <span className="mono-label">Active now</span>
+            {active.length ? (
+              active.map((u) => (
+                <button key={u} type="button" className="pill sm" onClick={() => lookup(u)}>
+                  {u}
+                </button>
+              ))
+            ) : (
+              <span className="caption">No users yet. Features appear about a minute after the stream starts.</span>
+            )}
+          </div>
+        )}
       </div>
 
       {state.kind === "idle" && (
@@ -163,6 +178,7 @@ export function Features() {
           <p>{state.message}</p>
         </div>
       )}
+      {state.kind === "loading" && <FeatureResultSkeleton />}
 
       {shown && (
         <>

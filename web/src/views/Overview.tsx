@@ -1,5 +1,6 @@
 import { Kpi } from "../components/Kpi";
 import { PipelineFlow } from "../components/PipelineFlow";
+import { OverviewSkeleton } from "../components/Skeleton";
 import { Sparkline } from "../components/Sparkline";
 import { QUERY_NAMES, batchAge } from "../hooks";
 import type { Health, Sample, Stats } from "../types";
@@ -25,61 +26,67 @@ export function Overview({ stats, health, history, now }: Props) {
         <p className="lead">{health.detail}</p>
       </header>
 
-      <div className="kpis">
-        <Kpi
-          label="Events per minute"
-          value={stats ? fmtCompact(stats.events_per_minute) : "—"}
-          caption={stats ? `About ${fmtInt(stats.events_per_minute / 60)} user events arrive every second.` : "Waiting for data."}
-        />
-        <Kpi
-          label="Users with live features"
-          value={stats ? fmtInt(stats.online_store_keys) : "—"}
-          caption="Each has an up-to-date feature vector in Redis, ready to serve."
-        />
-        <Kpi
-          label="Lookup latency · p50"
-          value={stats?.serving.p50_ms != null ? fmtMs(stats.serving.p50_ms) : "—"}
-          caption={
-            stats?.serving.samples
-              ? `Median over the last ${fmtInt(stats.serving.samples)} lookups (p95 ${fmtMs(stats.serving.p95_ms)}).`
-              : "Look up a user in Features to start measuring."
-          }
-        />
-        <Kpi
-          label="Pipeline health"
-          value={`${reporting} / 3`}
-          unit="queries"
-          tone={reporting === 3 && !stale ? "good" : "warn"}
-          caption={reporting === 3 && !stale ? "All streaming queries are processing batches." : "Some queries are not reporting yet."}
-        />
-      </div>
-
-      <div className="overview-grid">
-        <section className="card chart-card" aria-labelledby="tp-title">
-          <div className="card-head">
-            <div>
-              <div className="mono-label" id="tp-title">
-                Throughput · live
-              </div>
-              <p className="caption">Events per minute read by Spark from Kafka.</p>
-            </div>
-            <div className="mono-label">peak {fmtInt(peak)}</div>
+      {stats ? (
+        <>
+          <div className="kpis">
+            <Kpi
+              label="Events per minute"
+              value={fmtCompact(stats.events_per_minute)}
+              caption={`About ${fmtInt(stats.events_per_minute / 60)} user events arrive every second.`}
+            />
+            <Kpi
+              label="Users with live features"
+              value={fmtInt(stats.online_store_keys)}
+              caption="Each has an up-to-date feature vector in Redis, ready to serve."
+            />
+            <Kpi
+              label="Lookup latency · p50"
+              value={stats.serving.p50_ms != null ? fmtMs(stats.serving.p50_ms) : "—"}
+              caption={
+                stats.serving.samples
+                  ? `Median over the last ${fmtInt(stats.serving.samples)} lookups (p95 ${fmtMs(stats.serving.p95_ms)}).`
+                  : "Look up a user in Features to start measuring."
+              }
+            />
+            <Kpi
+              label="Pipeline health"
+              value={`${reporting} / 3`}
+              unit="queries"
+              tone={reporting === 3 && !stale ? "good" : "warn"}
+              caption={reporting === 3 && !stale ? "All streaming queries are processing batches." : "Some queries are not reporting yet."}
+            />
           </div>
-          <Sparkline samples={history} now={now} />
-        </section>
 
-        <section className="card" aria-labelledby="flow-title">
-          <div className="card-head">
-            <div>
-              <div className="mono-label" id="flow-title">
-                How data flows
+          <div className="overview-grid">
+            <section className="card chart-card" aria-labelledby="tp-title">
+              <div className="card-head">
+                <div>
+                  <div className="mono-label" id="tp-title">
+                    Throughput · live
+                  </div>
+                  <p className="caption">Events per minute read by Spark from Kafka.</p>
+                </div>
+                <div className="mono-label">peak {fmtInt(peak)}</div>
               </div>
-              <p className="caption">From raw event to servable feature, in seconds.</p>
-            </div>
+              <Sparkline samples={history} now={now} />
+            </section>
+
+            <section className="card" aria-labelledby="flow-title">
+              <div className="card-head">
+                <div>
+                  <div className="mono-label" id="flow-title">
+                    How data flows
+                  </div>
+                  <p className="caption">From raw event to servable feature, in seconds.</p>
+                </div>
+              </div>
+              <PipelineFlow stats={stats} offline={health.state === "offline"} />
+            </section>
           </div>
-          <PipelineFlow stats={stats} offline={health.state === "offline"} />
-        </section>
-      </div>
+        </>
+      ) : (
+        <OverviewSkeleton />
+      )}
     </div>
   );
 }
